@@ -1,0 +1,30 @@
+.hero_wrap {
+  height: 100vh;
+  position: relative;
+}
+
+.hero_bg_image_wrap {
+  height: 150vh;
+  width: 100vw;
+  filter: brightness(60%);
+  position: absolute;
+}
+
+.hero_bg_image_wrap img {
+  object-fit: cover;
+}
+
+.hero_image_wrap {
+  width: 350px;
+  height: 475px;
+  position: absolute;
+  filter: brightness(75%);
+}
+
+.hero_wrap h2 {
+  text-transform: uppercase;
+  color: white;
+  font-size: 8rem;
+  font-weight: 700;
+  z-index: 3;
+}
