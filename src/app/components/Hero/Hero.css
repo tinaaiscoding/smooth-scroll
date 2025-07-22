@@ -1,5 +1,5 @@
 .hero_wrap {
-  height: 100vh;
+  height: 150vh;
   position: relative;
   visibility: hidden;
 }
@@ -13,6 +13,11 @@
 
 .hero_bg_image_wrap img {
   object-fit: cover;
+}
+
+.hero_content_wrap {
+  height: 100vh;
+  position: relative;
 }
 
 .hero_image_wrap {

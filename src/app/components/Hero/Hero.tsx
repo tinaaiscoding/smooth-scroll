@@ -47,21 +47,24 @@ export default function Hero() {
           fill={true}
         />
       </div>
-      <div
-        ref={heroImage}
-        data-scroll
-        data-scroll-speed='0.3'
-        className='hero_image_wrap'
-      >
-        <Image
-          src={'/images/pexels-diogo-miranda-2044514-27068594.jpg'}
-          alt='nyc'
-          fill={true}
-        />
+
+      <div className='hero_content_wrap flex flex-col items-center justify-center'>
+        <div
+          ref={heroImage}
+          data-scroll
+          data-scroll-speed='0.5'
+          className='hero_image_wrap'
+        >
+          <Image
+            src={'/images/pexels-diogo-miranda-2044514-27068594.jpg'}
+            alt='nyc'
+            fill={true}
+          />
+        </div>
+        <h2 data-scroll data-scroll-speed='0.7'>
+          New York City
+        </h2>
       </div>
-      <h2 data-scroll data-scroll-speed='0.7'>
-        Smooth scroll
-      </h2>
     </div>
   );
 }

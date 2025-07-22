@@ -1,0 +1,11 @@
+.description_wrap {
+  position: absolute;
+  
+}
+
+.description_wrap p {
+  color: white;
+  font-size: 4.5rem;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
