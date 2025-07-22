@@ -1,18 +1,58 @@
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
+import { useLayoutEffect, useRef } from 'react';
 
 import './Hero.css';
 
+gsap.registerPlugin(ScrollTrigger);
+
 export default function Hero() {
+  const hero = useRef<HTMLDivElement>(null);
+  const backgroundImage = useRef<HTMLDivElement>(null);
+  const heroImage = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (!hero.current || !backgroundImage.current || !heroImage.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set(hero.current, { visibility: 'visible' });
+
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: document.documentElement,
+          start: 'top',
+          end: '+=500',
+          scrub: true,
+        },
+      });
+
+      timeline
+        .from(backgroundImage.current, { clipPath: 'inset(15%)' })
+        .to(heroImage.current, { height: '100px' }, 0);
+    }, hero.current);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className='hero_wrap flex flex-col items-center justify-center'>
-      <div className='hero_bg_image_wrap'>
+    <div
+      ref={hero}
+      className='hero_wrap flex flex-col items-center justify-center'
+    >
+      <div ref={backgroundImage} className='hero_bg_image_wrap'>
         <Image
           src={'/images/pexels-vinta-supply-co-nyc-268013-842948.jpg'}
           alt='nyc'
           fill={true}
         />
       </div>
-      <div data-scroll data-scroll-speed='0.3' className='hero_image_wrap'>
+      <div
+        ref={heroImage}
+        data-scroll
+        data-scroll-speed='0.3'
+        className='hero_image_wrap'
+      >
         <Image
           src={'/images/pexels-diogo-miranda-2044514-27068594.jpg'}
           alt='nyc'

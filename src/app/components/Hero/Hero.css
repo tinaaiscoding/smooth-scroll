@@ -1,6 +1,7 @@
 .hero_wrap {
   height: 100vh;
   position: relative;
+  visibility: hidden;
 }
 
 .hero_bg_image_wrap {
@@ -19,6 +20,11 @@
   height: 475px;
   position: absolute;
   filter: brightness(75%);
+}
+
+.hero_image_wrap img {
+  object-fit: cover;
+  object-position: top;
 }
 
 .hero_wrap h2 {
