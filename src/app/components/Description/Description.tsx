@@ -16,7 +16,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function Description() {
   return (
-    <div className='description_wrap px-24 py-24'>
+    <div className='description_wrap'>
       {phrases.map((phrase, i) => {
         return <AnimatedText key={i}>{phrase}</AnimatedText>;
       })}

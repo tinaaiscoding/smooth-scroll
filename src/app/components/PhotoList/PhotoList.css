@@ -1,0 +1,34 @@
+.photo_list_wrap {
+  margin: 10rem;
+  height: 600px;
+}
+
+.photo_wrap {
+  height: 600px;
+  width: 450px;
+  background-color: black;
+  position: absolute;
+}
+
+.photo_wrap img {
+  filter: brightness(80%);
+}
+
+.list_wrap {
+  height: 600px;
+  width: 100%;
+  z-index: 3;
+}
+
+.title_wrap {
+  height: 150px;
+  width: 100%;
+  border-bottom: 2px solid white;
+}
+
+.title_wrap p {
+  color: white;
+  text-transform: uppercase;
+  font-size: 4rem;
+  font-weight: 700;
+}

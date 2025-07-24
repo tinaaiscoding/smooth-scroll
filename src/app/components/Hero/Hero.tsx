@@ -42,7 +42,7 @@ export default function Hero() {
     >
       <div ref={backgroundImage} className='hero_bg_image_wrap'>
         <Image
-          src={'/images/pexels-vinta-supply-co-nyc-268013-842948.jpg'}
+          src={'/images/nyc.jpg'}
           alt='nyc'
           fill={true}
         />
@@ -56,7 +56,7 @@ export default function Hero() {
           className='hero_image_wrap'
         >
           <Image
-            src={'/images/pexels-diogo-miranda-2044514-27068594.jpg'}
+            src={'/images/the-san-remo.jpg'}
             alt='nyc'
             fill={true}
           />
