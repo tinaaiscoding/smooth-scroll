@@ -42,3 +42,14 @@
 .photo_description_wrap p {
   color: white;
 }
+
+.photo_description_title_wrap {
+  flex-grow: 1;
+}
+
+.photo_description_title_wrap p {
+  color: white;
+  text-transform: uppercase;
+  font-size: 4rem;
+  font-weight: 700;
+}

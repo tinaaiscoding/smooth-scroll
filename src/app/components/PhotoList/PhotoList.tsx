@@ -35,49 +35,44 @@ export default function PhotoList() {
   const [activePhoto, setActivePhoto] = useState({ active: false, index: 0 });
 
   const photoList = useRef<HTMLDivElement>(null);
-  const photoDescription = useRef<HTMLDivElement>(null);
   const list = useRef<HTMLDivElement>(null);
-
-  const handleMouseEnter = (index: number) => {
-    setPhotoIndex(index);
-  };
-
-  const handleBackClick = () => {
-    setActivePhoto({ ...activePhoto, active: false });
-  };
+  const photoDescription = useRef<HTMLDivElement>(null);
+  const photoDescriptionTitle = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!photoList.current) return;
+    if (!photoList.current || !list.current) return;
 
-    const listItems = photoList.current?.querySelectorAll('.title_wrap');
+    const listItems = list.current.querySelectorAll('.title_wrap');
+
+    const handleMouseEnter = (index: number) => {
+      return () => setPhotoIndex(index);
+    };
 
     const ctx = gsap.context(() => {
+      if (!listItems.length) return;
+
       const createListItemTimelines = () => {
         const timelines = [];
 
         listItems.forEach((item, i) => {
-          const otherListItems = [...listItems].filter((li) => li !== item);
+          const mouseEnterHandler = handleMouseEnter(i);
+          item.addEventListener('mouseenter', mouseEnterHandler);
+
+          const title = item.querySelector('p');
 
           const timeline = gsap.timeline({
             paused: true,
             defaults: { duration: 1 },
           });
 
-          timeline.to(item, {
-            top: 0,
-            backgroundColor: 'red',
-          });
-          timeline.to(otherListItems, { opacity: 0 }, 0);
-
           const clickHandler = () => {
-            console.log('click');
+            item.removeEventListener('mouseenter', mouseEnterHandler);
+            timeline.to(listItems, { opacity: 0 }, 0);
+            timeline.set(listItems, { display: 'none' });
 
-            const state = Flip.getState(item);
-
-            if (item.parentNode === list.current) {
-              photoDescription.current?.appendChild(item);
-            } else {
-              list.current?.appendChild(item);
+            const state = Flip.getState(title);
+            if (title?.parentNode === item) {
+              photoDescriptionTitle.current?.appendChild(title);
             }
 
             Flip.from(state, {
@@ -85,15 +80,32 @@ export default function PhotoList() {
               ease: 'power1.inOut',
             });
 
-            timeline
-              .timeScale(1)
-              .play()
-              .eventCallback('onComplete', () => {
-                setActivePhoto({ active: true, index: i });
-              });
+            timeline.play().eventCallback('onComplete', () => {
+              setActivePhoto({ active: true, index: i });
+            });
           };
 
-          timelines.push({ item, timeline, clickHandler });
+          const backHandler = () => {
+            timeline.to(listItems, { opacity: 1 }, 0);
+            timeline.set(listItems, { display: 'block' }, 0);
+
+            const state = Flip.getState(title);
+
+            if (title?.parentNode === photoDescriptionTitle.current) {
+              item.append(title);
+            }
+
+            Flip.from(state, {
+              duration: 1,
+              ease: 'power1.inOut',
+            });
+
+            timeline.play().eventCallback('onComplete', () => {
+              setActivePhoto({ active: false, index: i });
+            });
+          };
+
+          timelines.push({ item, timeline, clickHandler, backHandler });
         });
 
         return timelines;
@@ -101,8 +113,11 @@ export default function PhotoList() {
 
       const listItemTimelines = createListItemTimelines();
 
-      listItemTimelines.forEach(({ item, clickHandler }) => {
+      listItemTimelines.forEach(({ item, clickHandler, backHandler }) => {
         item.addEventListener('click', clickHandler);
+        document
+          .querySelector('.back_btn')
+          ?.addEventListener('click', backHandler);
       });
     }, photoList.current);
 
@@ -125,7 +140,7 @@ export default function PhotoList() {
       </div>
 
       <div
-        ref={photoDescription}
+        ref={list}
         className='list_wrap item-end flex flex-col justify-between'
       >
         {photos.map((photo, i) => {
@@ -133,7 +148,6 @@ export default function PhotoList() {
             <div
               key={i}
               className='title_wrap flex flex-row items-center justify-end'
-              onMouseEnter={() => handleMouseEnter(i)}
             >
               <p>{photo.title}</p>
             </div>
@@ -142,10 +156,14 @@ export default function PhotoList() {
       </div>
 
       <div
-        ref={list}
+        ref={photoDescription}
         className='photo_description_wrap flex flex-col items-end justify-between'
       >
-        <p onClick={handleBackClick}>Back</p>
+        <p className='back_btn'>Back</p>
+        <div
+          ref={photoDescriptionTitle}
+          className='photo_description_title_wrap'
+        ></div>
         <p>{photos[activePhoto.index].description}</p>
       </div>
     </div>
