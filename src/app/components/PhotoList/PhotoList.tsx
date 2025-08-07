@@ -41,89 +41,92 @@ export default function PhotoList() {
 
   useEffect(() => {
     if (!photoList.current || !list.current) return;
-
+    gsap.set(photoDescription.current, { display: 'none' });
     const listItems = list.current.querySelectorAll('.title_wrap');
 
     const handleMouseEnter = (index: number) => {
       return () => setPhotoIndex(index);
     };
 
-    const ctx = gsap.context(() => {
-      if (!listItems.length) return;
+    if (!listItems.length) return;
 
-      const createListItemTimelines = () => {
-        const timelines = [];
+    let activeItem: number;
 
-        listItems.forEach((item, i) => {
-          const mouseEnterHandler = handleMouseEnter(i);
-          item.addEventListener('mouseenter', mouseEnterHandler);
+    const createListItemTimelines = () => {
+      const timelines = [];
 
-          const title = item.querySelector('p');
+      listItems.forEach((item, i) => {
+        const mouseEnterHandler = handleMouseEnter(i);
+        item.addEventListener('mouseenter', mouseEnterHandler);
 
-          const timeline = gsap.timeline({
-            paused: true,
-            defaults: { duration: 1 },
-          });
+        const title = item.querySelector('p');
+        if (!title) return;
 
-          const clickHandler = () => {
-            item.removeEventListener('mouseenter', mouseEnterHandler);
-            timeline.to(listItems, { opacity: 0 }, 0);
-            timeline.set(listItems, { display: 'none' });
-
-            const state = Flip.getState(title);
-            if (title?.parentNode === item) {
-              photoDescriptionTitle.current?.appendChild(title);
-            }
-
-            Flip.from(state, {
-              duration: 1,
-              ease: 'power1.inOut',
-            });
-
-            timeline.play().eventCallback('onComplete', () => {
-              setActivePhoto({ active: true, index: i });
-            });
-          };
-
-          const backHandler = () => {
-            timeline.to(listItems, { opacity: 1 }, 0);
-            timeline.set(listItems, { display: 'block' }, 0);
-
-            const state = Flip.getState(title);
-
-            if (title?.parentNode === photoDescriptionTitle.current) {
-              item.append(title);
-            }
-
-            Flip.from(state, {
-              duration: 1,
-              ease: 'power1.inOut',
-            });
-
-            timeline.play().eventCallback('onComplete', () => {
-              setActivePhoto({ active: false, index: i });
-            });
-          };
-
-          timelines.push({ item, timeline, clickHandler, backHandler });
+        const timeline = gsap.timeline({
+          paused: true,
+          defaults: { duration: 1 },
         });
 
-        return timelines;
-      };
+        const clickHandler = (e) => {
+          gsap.set(photoDescription.current, { display: 'block' });
+          activeItem = +i;
+          timeline.to(listItems, { opacity: 0 });
+          timeline.to(listItems, { display: 'none' }, '<');
 
-      const listItemTimelines = createListItemTimelines();
+          const state = Flip.getState(title);
+          if (title?.parentNode === item) {
+            photoDescriptionTitle.current?.appendChild(title);
+          }
 
-      listItemTimelines.forEach(({ item, clickHandler, backHandler }) => {
-        item.addEventListener('click', clickHandler);
-        document
-          .querySelector('.back_btn')
-          ?.addEventListener('click', backHandler);
+          Flip.from(state, {
+            duration: 1,
+            ease: 'power1.inOut',
+          });
+
+          timeline.play().eventCallback('onComplete', () => {
+            setActivePhoto({ active: true, index: i });
+          });
+        };
+
+        timelines.push({ item, timeline, clickHandler });
       });
-    }, photoList.current);
 
-    return () => {
-      ctx.revert();
+      return timelines;
     };
+
+    const backHandler = () => {
+      const { timeline, item } = listItemTimelines[activeItem];
+      const title = document.querySelector('.photo_description_title_wrap p');
+
+      const state = Flip.getState(title);
+
+      if (title?.parentNode === photoDescriptionTitle.current) {
+        item.append(title);
+      }
+
+      timeline.set(listItems, { display: 'flex' });
+      timeline.to(listItems, { opacity: 1 });
+      timeline.set(photoDescription.current, { display: 'none' });
+
+      timeline.play().eventCallback('onComplete', () => {
+        setActivePhoto({ active: false, index: activeItem });
+      });
+
+      Flip.from(state, {
+        duration: 1,
+        ease: 'power1.inOut',
+      });
+    };
+
+    const listItemTimelines = createListItemTimelines();
+
+    listItemTimelines.forEach(({ item, clickHandler }) => {
+      item.addEventListener('click', clickHandler);
+    });
+
+    document.querySelector('.back_btn')?.addEventListener('click', backHandler);
+
+    return () => {};
   }, []);
 
   return (
@@ -133,7 +136,9 @@ export default function PhotoList() {
     >
       <div className='photo_wrap'>
         <Image
-          src={photos[photoIndex].imageSrc}
+          src={
+            photos[activePhoto.active ? activePhoto.index : photoIndex].imageSrc
+          }
           alt={photos[photoIndex].title}
           fill={true}
         />
@@ -147,6 +152,7 @@ export default function PhotoList() {
           return (
             <div
               key={i}
+              data-id={i}
               className='title_wrap flex flex-row items-center justify-end'
             >
               <p>{photo.title}</p>
