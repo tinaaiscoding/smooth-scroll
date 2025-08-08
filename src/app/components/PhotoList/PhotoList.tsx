@@ -68,10 +68,10 @@ export default function PhotoList() {
         });
 
         const clickHandler = (e) => {
-          gsap.set(photoDescription.current, { display: 'block' });
+          gsap.set(photoDescription.current, { display: 'flex' });
           activeItem = +i;
           timeline.to(listItems, { opacity: 0 });
-          timeline.to(listItems, { display: 'none' }, '<');
+          timeline.set(list.current, { display: 'none' }, '<');
 
           const state = Flip.getState(title);
           if (title?.parentNode === item) {
@@ -104,7 +104,7 @@ export default function PhotoList() {
         item.append(title);
       }
 
-      timeline.set(listItems, { display: 'flex' });
+      timeline.set(list.current, { display: 'block' });
       timeline.to(listItems, { opacity: 1 });
       timeline.set(photoDescription.current, { display: 'none' });
 
@@ -130,18 +130,33 @@ export default function PhotoList() {
   }, []);
 
   return (
-    <div
-      ref={photoList}
-      className='photo_list_wrap flex flex-row items-center justify-between'
-    >
-      <div className='photo_wrap'>
-        <Image
-          src={
-            photos[activePhoto.active ? activePhoto.index : photoIndex].imageSrc
-          }
-          alt={photos[photoIndex].title}
-          fill={true}
-        />
+    <div className='photo_list_wrap'>
+      <div
+        ref={photoList}
+        className='photo_list_contain flex flex-row items-center justify-between'
+      >
+        <div className='photo_wrap'>
+          <Image
+            src={
+              photos[activePhoto.active ? activePhoto.index : photoIndex]
+                .imageSrc
+            }
+            alt={photos[photoIndex].title}
+            fill={true}
+          />
+        </div>
+
+        <div
+          ref={photoDescription}
+          className='photo_description_wrap flex flex-col items-end justify-between'
+        >
+          <p className='back_btn'>Back</p>
+          <div
+            ref={photoDescriptionTitle}
+            className='photo_description_title_wrap'
+          ></div>
+          <p>{photos[activePhoto.index].description}</p>
+        </div>
       </div>
 
       <div
@@ -159,18 +174,6 @@ export default function PhotoList() {
             </div>
           );
         })}
-      </div>
-
-      <div
-        ref={photoDescription}
-        className='photo_description_wrap flex flex-col items-end justify-between'
-      >
-        <p className='back_btn'>Back</p>
-        <div
-          ref={photoDescriptionTitle}
-          className='photo_description_title_wrap'
-        ></div>
-        <p>{photos[activePhoto.index].description}</p>
       </div>
     </div>
   );
