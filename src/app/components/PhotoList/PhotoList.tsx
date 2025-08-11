@@ -38,11 +38,13 @@ export default function PhotoList() {
   const list = useRef<HTMLDivElement>(null);
   const photoDescription = useRef<HTMLDivElement>(null);
   const photoDescriptionTitle = useRef<HTMLDivElement>(null);
+  const photoDescriptionCaption = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!photoList.current || !list.current) return;
     gsap.set(photoDescription.current, { display: 'none' });
     const listItems = list.current.querySelectorAll('.title_wrap');
+    const bottomLines = list.current.querySelectorAll('.bottom_line');
 
     const handleMouseEnter = (index: number) => {
       return () => setPhotoIndex(index);
@@ -60,20 +62,26 @@ export default function PhotoList() {
         item.addEventListener('mouseenter', mouseEnterHandler);
 
         const title = item.querySelector('p');
+        const otherTitles = [...listItems].filter(
+          (i) => i.querySelector('p') !== title,
+        );
         if (!title) return;
 
         const timeline = gsap.timeline({
           paused: true,
-          defaults: { duration: 1 },
+          defaults: { duration: 0.5 },
         });
 
         const clickHandler = (e) => {
-          gsap.set(photoDescription.current, { display: 'flex' });
-          activeItem = +i;
-          timeline.to(listItems, { opacity: 0 });
-          timeline.set(list.current, { display: 'none' }, '<');
-
+          setActivePhoto({ active: true, index: i });
           const state = Flip.getState(title);
+          activeItem = +i;
+
+          timeline.to(bottomLines, { xPercent: 100 });
+          timeline.to(otherTitles, { opacity: 0 }, '<');
+          timeline.set(list.current, { display: 'none' });
+          gsap.set(photoDescription.current, { display: 'flex' });
+
           if (title?.parentNode === item) {
             photoDescriptionTitle.current?.appendChild(title);
           }
@@ -83,8 +91,11 @@ export default function PhotoList() {
             ease: 'power1.inOut',
           });
 
-          timeline.play().eventCallback('onComplete', () => {
-            setActivePhoto({ active: true, index: i });
+          timeline.play();
+          gsap.from(photoDescriptionCaption.current, {
+            opacity: 0,
+            yPercent: 100,
+            duration: 0.5,
           });
         };
 
@@ -97,16 +108,21 @@ export default function PhotoList() {
     const backHandler = () => {
       const { timeline, item } = listItemTimelines[activeItem];
       const title = document.querySelector('.photo_description_title_wrap p');
+      timeline.set(list.current, { display: 'block' });
+      const otherTitles = [...listItems].filter(
+        (i) => i.querySelector('p')?.innerText !== title?.innerHTML,
+      );
 
       const state = Flip.getState(title);
 
+      gsap.set(photoDescription.current, { display: 'none' });
+
       if (title?.parentNode === photoDescriptionTitle.current) {
-        item.append(title);
+        item.prepend(title);
       }
 
-      timeline.set(list.current, { display: 'block' });
-      timeline.to(listItems, { opacity: 1 });
-      timeline.set(photoDescription.current, { display: 'none' });
+      timeline.to(bottomLines, { xPercent: 0 });
+      timeline.to(otherTitles, { opacity: 1 }, '<');
 
       timeline.play().eventCallback('onComplete', () => {
         setActivePhoto({ active: false, index: activeItem });
@@ -150,12 +166,17 @@ export default function PhotoList() {
           ref={photoDescription}
           className='photo_description_wrap flex flex-col items-end justify-between'
         >
-          <p className='back_btn'>Back</p>
-          <div
-            ref={photoDescriptionTitle}
-            className='photo_description_title_wrap'
-          ></div>
-          <p>{photos[activePhoto.index].description}</p>
+          <div className='photo_description_header_wrap flex flex-col items-end'>
+            <p className='back_btn'>Back</p>
+            <div
+              ref={photoDescriptionTitle}
+              className='photo_description_title_wrap'
+            ></div>
+          </div>
+
+          <p ref={photoDescriptionCaption}>
+            {photos[activePhoto.index].description}
+          </p>
         </div>
       </div>
 
@@ -168,9 +189,12 @@ export default function PhotoList() {
             <div
               key={i}
               data-id={i}
-              className='title_wrap flex flex-row items-center justify-end'
+              className='title_wrap flex flex-col items-end justify-between'
             >
               <p>{photo.title}</p>
+              <div className='bottom_line_wrap'>
+                <div className='bottom_line'></div>
+              </div>
             </div>
           );
         })}
