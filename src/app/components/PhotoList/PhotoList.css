@@ -12,14 +12,13 @@
 }
 
 .photo_wrap {
+  --brightness: 0.7;
+
   height: 600px;
   width: 450px;
   background-color: black;
   position: relative;
-}
-
-.photo_wrap img {
-  filter: brightness(70%);
+  filter: brightness(var(--brightness));
 }
 
 .list_wrap {
