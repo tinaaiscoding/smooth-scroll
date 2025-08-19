@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smooth scroll + PhotoList animation
+This project started as a follow-along with the [Smooth Scroll tutorial](https://blog.olivierlarose.com/tutorials/smooth-scroll), but I wanted to make the photo list component interactive. The photo list still includes the original mouseover effects, with the addition of a smooth transition when clicking a photo title and animating in the next component.
 
-## Getting Started
+## Demo
 
-First, run the development server:
+---
 
-```bash
+## Tech Stack
+- Next.js (React framework)  
+- TypeScript  
+- GSAP
+- CSS / Tailwind
+- Locomotive Scroll
+
+---
+## Features
+- Hover to preview different photos
+- Click a title to animate into single photo view using **GSAP Flip**  
+- Animated captions and smooth back button transition  
+- Uses CSS custom properties for brightness control 
+- Uses Locomotive Scroll to create quick and easy parallax scroll effect.
+
+---
+## What I Learned
+- How to use **GSAP Flip** to capture and animate DOM states  
+- The importance of capturing Flip states *before* DOM changes  
+- Managing refs cleanly in React for GSAP animations  
+- Using CSS variables with GSAP (`--brightness`) to avoid janky transitions  
+- Structuring reusable utility functions (e.g., filtering list items, handling refs)  
+- How to use DevTools to view event listeners.
+
+---
+
+## Challenges & Solutions
+- **Problem:** Event listeners were not being cleaned up properly causing unwanted animation behaviour
+  - **Solution:** Used gsap context to scope things properly, and made sure the clean up was running properly on unmount/re-render. Used DevTools to assist with debug the event listeners
+- **Problem:** Brightness animation was jumping from 70% → 0% → 100%  
+  - **Solution:** Used a CSS variable (`--brightness`) instead of directly animating `filter`  
+- **Problem:** Handling smooth back transitions with Flip  
+  - **Solution:** Ensured that the DOM existed at the time the transition was running.
+- **Problem:** The mouseover effect was still active after clicking a photo title, causing the displayed photo to change on hover when it should have only shown the photo for the clicked title.
+  - **Solution:** Updated state to track the photo index of the clicked title and set the pointer events of all other titles to `none`.
+
+## Run Locally
+```
+git clone https://github.com/tinaaiscoding/smooth-scroll.git
+cd smooth-scroll
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Credits / Acknowledgements
+- Thank you to Olivier Lacrose for the tutorial!
+  - [Smooth Scroll tutorial](https://blog.olivierlarose.com/tutorials/smooth-scroll)
+  - [Original live demo](https://blog.olivierlarose.com/demos/smooth-scroll)
