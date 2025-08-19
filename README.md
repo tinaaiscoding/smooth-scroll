@@ -2,6 +2,7 @@
 This project started as a follow-along with the [Smooth Scroll tutorial](https://blog.olivierlarose.com/tutorials/smooth-scroll), but I wanted to make the photo list component interactive. The photo list still includes the original mouseover effects, with the addition of a smooth transition when clicking a photo title and animating in the next component.
 
 ## Demo
+https://github.com/user-attachments/assets/512096a7-388f-47b8-8101-f32112bf9f2a
 
 ---
 
